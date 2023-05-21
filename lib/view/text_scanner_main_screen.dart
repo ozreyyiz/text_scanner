@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:text_scanner/view/result_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,6 +18,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   bool _isPermissionGranted = false;
   late final Future _future;
   CameraController? _cameraController;
+  final _textRecognizer = TextRecognizer();
   @override
   void initState() {
     super.initState();
@@ -24,8 +28,10 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    super.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    _stopCamera();
+    _textRecognizer.close();
+    super.dispose();
   }
 
   @override
@@ -65,8 +71,10 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                   },
                 ),
               Scaffold(
+                backgroundColor: Colors.transparent,
                 appBar: AppBar(
                   title: const Text("Text Scanner"),
+                  backgroundColor: Colors.transparent,
                 ),
                 body: _isPermissionGranted
                     ? Column(
@@ -77,7 +85,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                           Container(
                             child: Center(
                               child: ElevatedButton(
-                                onPressed: null,
+                                onPressed: _scanText,
                                 child: Text("Scan text"),
                               ),
                             ),
@@ -150,5 +158,23 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     }
 
     setState(() {});
+  }
+
+  Future<void> _scanText() async {
+    if (_cameraController == null) return;
+
+    try {
+      final _pictureFile = await _cameraController!.takePicture();
+
+      final file = File(_pictureFile.path);
+
+      final inputImage = InputImage.fromFile(file);
+      final recognizedText = await _textRecognizer.processImage(inputImage);
+      await Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => ResultScreen(text: recognizedText.text)));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("An error occurred when scannibg text.")));
+    }
   }
 }

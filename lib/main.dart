@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:text_scanner/view/text_scanner_main_screen.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(App());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class App extends StatelessWidget {
+  const App({super.key});
 
   // This widget is the root of your application.
   @override
