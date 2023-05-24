@@ -66,7 +66,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                         child: CameraPreview(_cameraController!),
                       );
                     } else {
-                      return LinearProgressIndicator();
+                      return const LinearProgressIndicator();
                     }
                   },
                 ),
@@ -82,14 +82,19 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                           Expanded(
                             child: Container(),
                           ),
-                          Container(
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
                             child: Center(
                               child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey.withOpacity(0.3),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(80))),
                                 onPressed: _scanText,
-                                child: Text("Scan text"),
+                                child: const Text("Scan Text"),
                               ),
                             ),
-                          )
+                          ),
                         ],
                       )
                     : Center(
@@ -164,9 +169,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     if (_cameraController == null) return;
 
     try {
-      final _pictureFile = await _cameraController!.takePicture();
+      final pictureFile = await _cameraController!.takePicture();
 
-      final file = File(_pictureFile.path);
+      final file = File(pictureFile.path);
 
       final inputImage = InputImage.fromFile(file);
       final recognizedText = await _textRecognizer.processImage(inputImage);

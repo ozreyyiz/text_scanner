@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:text_scanner/view/result_screen.dart';
 import 'package:text_scanner/view/text_scanner_main_screen.dart';
 
 void main() => runApp(App());
